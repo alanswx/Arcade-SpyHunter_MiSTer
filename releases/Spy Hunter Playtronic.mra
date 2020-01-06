@@ -1,0 +1,36 @@
+<misterromdescription>
+	<name>Spyhunter</name>
+	<mameversion>0216</mameversion>
+	<mratimestamp>201901010000</mratimestamp>
+	<year>1983</year>
+	<manufacturer>Bally Midway</manufacturer>
+	<category>Action</category>
+	<rbf>Spyhunter</rbf>
+	<rom index="0" zip="spyhuntp.zip" md5="208881d3b4328bb8f1c9e3e0719c802e" type="merged|nonmerged">
+		<part name="sh_mb_2.bin"/>
+		<part name="spy-hunter_cpu_pg1_2-9-84.7d"/>
+		<part name="spy-hunter_cpu_pg2_2-9-84.8d"/>
+		<part name="spy-hunter_cpu_pg3_2-9-84.9d"/>
+		<part name="sh_mb_6.bin"/>
+		<part name="spy-hunter_cpu_pg5_2-9-84.11d"/>
+		<part name="spy-hunter_snd_0_sd_11-18-83.a7"/>
+		<part name="spy-hunter_snd_1_sd_11-18-83.a8"/>
+		<part name="spy-hunter_cs_deluxe_u17_b_11-18-83.u17"/>
+		<part name="spy-hunter_cs_deluxe_u18_d_11-18-83.u18"/>
+		<part name="spy-hunter_cs_deluxe_u7_a_11-18-83.u7"/>
+		<part name="spy-hunter_cs_deluxe_u8_c_11-18-83.u8"/>
+		<part name="spy-hunter_video_1fg_11-18-83.a7"/>
+		<part name="spy-hunter_video_0fg_11-18-83.a8"/>
+		<part name="spy-hunter_video_3fg_11-18-83.a5"/>
+		<part name="spy-hunter_video_2fg_11-18-83.a6"/>		
+		<part name="spy-hunter_video_5fg_11-18-83.a3"/>
+		<part name="spy-hunter_video_4fg_11-18-83.a4"/>
+		<part name="spy-hunter_video_7fg_11-18-83.a1"/>
+		<part name="spy-hunter_video_6fg_11-18-83.a2"/>		
+		<part name="spy-hunter_cpu_bg0_11-18-83.3a"/>
+		<part name="spy-hunter_cpu_bg1_11-18-83.4a"/>
+		<part name="spy-hunter_cpu_bg2_11-18-83.5a"/>
+		<part name="spy-hunter_cpu_bg3_11-18-83.6a"/>
+		<part name="sh_mb_1.bin"/>
+	</rom>
+</misterromdescription>
