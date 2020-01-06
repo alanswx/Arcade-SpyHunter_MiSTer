@@ -204,11 +204,15 @@ wire [31:0] sp_do;
 //  0000 -  DFFF - Main ROM (8 bit)
 //  E000 -  FFFF - Super Sound board ROM (8 bit)
 // 10000 - 17FFF - CSD ROM (16 bit)
-// 18000 -         Sprite ROMs (32 bit)
+// 18000 - 37FFF - Sprite ROMs (32 bit)
+// 38000 - 3FFFF - BG ROMs 
+// 40000 - 40FFF - CH ROMs
 
 wire [24:0] rom_ioctl_addr = ~ioctl_addr[16] ? ioctl_addr : // 8 bit ROMs
                              {ioctl_addr[24:16], ioctl_addr[15], ioctl_addr[13:0], ioctl_addr[14]}; // 16 bit ROM
 wire [24:0] sp_ioctl_addr = ioctl_addr - 17'h18000;
+wire [24:0] dl_addr = ioctl_addr - 18'h38000; // background offset
+
 
 reg port1_req, port2_req;
 sdram sdram
@@ -237,7 +241,7 @@ sdram sdram
 	// port2 for sprite graphics
 	.port2_req     ( port2_req ),
 	.port2_ack     ( ),
-	.port2_a       ( {sp_ioctl_addr[14:0], sp_ioctl_addr[16]} ), // merge sprite roms to 32-bit wide words
+	.port2_a       ( {sp_ioctl_addr[18:17], sp_ioctl_addr[14:0], sp_ioctl_addr[16]} ), // merge sprite roms to 32-bit wide words
 	.port2_ds      ( {sp_ioctl_addr[15], ~sp_ioctl_addr[15]} ),
 	.port2_we      ( ioctl_download ),
 	.port2_d       ( {ioctl_dout, ioctl_dout} ),
@@ -405,7 +409,10 @@ spy_hunter spy_hunter
 	.csd_rom_addr ( csd_addr ),
 	.csd_rom_do   ( csd_do ),
 	.sp_addr      ( sp_addr ),
-	.sp_graphx32_do ( sp_do )
+	.sp_graphx32_do ( sp_do ),
+	.dl_addr      ( dl_addr    ),
+	.dl_wr        ( ioctl_wr   ),
+	.dl_data      ( ioctl_dout )
 );
 
 wire  [7:0] steering_ana, steering_emu;

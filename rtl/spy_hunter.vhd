@@ -181,7 +181,10 @@ port(
   csd_rom_addr   : out std_logic_vector(14 downto 1);
   csd_rom_do     : in  std_logic_vector(15 downto 0);
   sp_addr        : out std_logic_vector(14 downto 0);
-  sp_graphx32_do : in  std_logic_vector(31 downto 0); 
+  sp_graphx32_do : in  std_logic_vector(31 downto 0);
+  dl_addr        : in std_logic_vector(15 downto 0);
+  dl_data        : in std_logic_vector( 7 downto 0);
+  dl_wr          : in std_logic; 
   dbg_cpu_addr   : out std_logic_vector(15 downto 0)
  );
 end spy_hunter;
@@ -367,6 +370,10 @@ architecture struct of spy_hunter is
 -- signal max_sprite: std_logic_vector(7 downto 0); -- dbg
 -- signal max_sprite_r: std_logic_vector(7 downto 0); -- dbg
 -- signal max_sprite_rr: std_logic_vector(7 downto 0); -- dbg
+
+ signal dl_bg_graphics_1_we : std_logic;
+ signal dl_bg_graphics_2_we : std_logic;
+ signal dl_cg_graphics_we   : std_logic;
   
 begin
 
@@ -729,12 +736,10 @@ sp_vcnt <= vflip + (sp_ram_do & '0') -1 ; -- valid when sp_input_phase = 0
 sp_hflip <= (others => sp_attr(4));
 sp_vflip <= (others => sp_attr(5));
 
-sp_graphx_do <= sp_graphx32_do_r( 7 downto  0) when (sp_hflip(0) = '0' and sp_mux_roms = "10") or (sp_hflip(0) = '1' and sp_mux_roms = "11") else
-                sp_graphx32_do_r(15 downto  8) when (sp_hflip(0) = '0' and sp_mux_roms = "11") or (sp_hflip(0) = '1' and sp_mux_roms = "10") else
-					 sp_graphx32_do_r(23 downto 16) when (sp_hflip(0) = '0' and sp_mux_roms = "00") or (sp_hflip(0) = '1' and sp_mux_roms = "01") else
-					 sp_graphx32_do_r(31 downto 24) when (sp_hflip(0) = '0' and sp_mux_roms = "01") or (sp_hflip(0) = '1' and sp_mux_roms = "00") else
-					 (others => '0');
-
+sp_graphx_do <= sp_graphx32_do_r( 7 downto  0) when (sp_hflip(0) = '0' and sp_mux_roms = "01") or (sp_hflip(0) = '1' and sp_mux_roms = "00") else
+                sp_graphx32_do_r(15 downto  8) when (sp_hflip(0) = '0' and sp_mux_roms = "10") or (sp_hflip(0) = '1' and sp_mux_roms = "11") else
+				sp_graphx32_do_r(23 downto 16) when (sp_hflip(0) = '0' and sp_mux_roms = "11") or (sp_hflip(0) = '1' and sp_mux_roms = "10") else
+				sp_graphx32_do_r(31 downto 24);-- when (sp_hflip(0) = '0' and sp_mux_roms = "00") or (sp_hflip(0) = '1' and sp_mux_roms = "01") ;
 sp_graphx_a <= sp_graphx_do(7 downto 4) when sp_hflip(0) = '1' else sp_graphx_do(3 downto 0);
 sp_graphx_b <= sp_graphx_do(3 downto 0) when sp_hflip(0) = '1' else sp_graphx_do(7 downto 4);
 
@@ -1136,28 +1141,60 @@ port map(
 );
 
 -- char graphics ROM 10G
-ch_graphics : entity work.spy_hunter_ch_bits
+ch_graphics : entity work.dpram
+generic map(
+	aWidth => 12,
+	dWidth => 8
+)
 port map(
- clk  => clock_vidn,
- addr => ch_code_line,
- data => ch_graphx_do
+ clk_a  => clock_vidn,
+ addr_a => ch_code_line,
+ q_a    => ch_graphx_do,
+ clk_b  => clock_vid,
+ addr_b => dl_addr(11 downto 0),
+ we_b   => dl_cg_graphics_we,
+ d_b    => dl_data
 );
+dl_cg_graphics_we <= '1' when dl_wr = '1' and dl_addr(15 downto 12) = "1000" else '0';
 
--- background graphics ROM 3A/4A
-bg_graphics_1 : entity work.spy_hunter_bg_bits_1
+
+-- background graphics 3A/4A
+--bg_graphics_1 : entity work.tapper_bg_bits_1
+bg_graphics_1 : entity work.dpram
+generic map(
+	aWidth => 14,
+	dWidth => 8
+)
 port map(
- clk  => clock_vidn,
- addr => bg_code_line,
- data => bg_graphx1_do
+ clk_a  => clock_vidn,
+ addr_a => bg_code_line,
+ q_a    => bg_graphx1_do,
+ clk_b  => clock_vid,
+ addr_b => dl_addr(13 downto 0),
+ we_b   => dl_bg_graphics_1_we,
+ d_b    => dl_data
 );
+dl_bg_graphics_1_we <= '1' when dl_wr = '1' and dl_addr(15 downto 14) = "00" else '0';
+
 
 -- background graphics ROM 5A/6A
-bg_graphics_2 : entity work.spy_hunter_bg_bits_2
+--bg_graphics_2 : entity work.tapper_bg_bits_2
+bg_graphics_2 : entity work.dpram
+generic map(
+	aWidth => 14,
+	dWidth => 8
+)
 port map(
- clk  => clock_vidn,
- addr => bg_code_line,
- data => bg_graphx2_do
+ clk_a  => clock_vidn,
+ addr_a => bg_code_line,
+ q_a    => bg_graphx2_do,
+ clk_b  => clock_vid,
+ addr_b => dl_addr(13 downto 0),
+ we_b   => dl_bg_graphics_2_we,
+ d_b    => dl_data
 );
+dl_bg_graphics_2_we <= '1' when dl_wr = '1' and dl_addr(15 downto 14) = "01" else '0';
+
 
 -- sprite graphics ROM A7-A8/A5-A6/A3-A4/A1-A2
 --sprite_graphics : entity work.timber_sp_bits     -- full size sprite rom
