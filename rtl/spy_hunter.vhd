@@ -738,8 +738,14 @@ sp_vflip <= (others => sp_attr(5));
 
 sp_graphx_do <= sp_graphx32_do_r( 7 downto  0) when (sp_hflip(0) = '0' and sp_mux_roms = "01") or (sp_hflip(0) = '1' and sp_mux_roms = "00") else
                 sp_graphx32_do_r(15 downto  8) when (sp_hflip(0) = '0' and sp_mux_roms = "10") or (sp_hflip(0) = '1' and sp_mux_roms = "11") else
-				sp_graphx32_do_r(23 downto 16) when (sp_hflip(0) = '0' and sp_mux_roms = "11") or (sp_hflip(0) = '1' and sp_mux_roms = "10") else
-				sp_graphx32_do_r(31 downto 24);-- when (sp_hflip(0) = '0' and sp_mux_roms = "00") or (sp_hflip(0) = '1' and sp_mux_roms = "01") ;
+        sp_graphx32_do_r(23 downto 16) when (sp_hflip(0) = '0' and sp_mux_roms = "11") or (sp_hflip(0) = '1' and sp_mux_roms = "10") else
+        sp_graphx32_do_r(31 downto 24) when (sp_hflip(0) = '0' and sp_mux_roms = "00") or (sp_hflip(0) = '1' and sp_mux_roms = "01") else
+        (others => '0');
+
+--sp_graphx_do <= sp_graphx32_do_r( 7 downto  0) when (sp_hflip(0) = '0' and sp_mux_roms = "01") or (sp_hflip(0) = '1' and sp_mux_roms = "00") else
+--                sp_graphx32_do_r(15 downto  8) when (sp_hflip(0) = '0' and sp_mux_roms = "10") or (sp_hflip(0) = '1' and sp_mux_roms = "11") else
+--				sp_graphx32_do_r(23 downto 16) when (sp_hflip(0) = '0' and sp_mux_roms = "11") or (sp_hflip(0) = '1' and sp_mux_roms = "10") else
+--				sp_graphx32_do_r(31 downto 24);-- when (sp_hflip(0) = '0' and sp_mux_roms = "00") or (sp_hflip(0) = '1' and sp_mux_roms = "01") ;
 sp_graphx_a <= sp_graphx_do(7 downto 4) when sp_hflip(0) = '1' else sp_graphx_do(3 downto 0);
 sp_graphx_b <= sp_graphx_do(3 downto 0) when sp_hflip(0) = '1' else sp_graphx_do(7 downto 4);
 
